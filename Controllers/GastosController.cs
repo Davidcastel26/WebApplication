@@ -8,33 +8,42 @@ namespace WebApplication.Controllers;
 [Route("api/[controller]")]
 public class GastosController : ControllerBase
 {
-    private readonly IGastoService _service;
+    private readonly IGastoService _gastoService;
 
-    public GastosController(IGastoService service) => _service = service;
+    public GastosController(IGastoService gastoService)
+    {
+        _gastoService = gastoService;
+    }
 
     [HttpPost]
-    public async Task<ActionResult<GastoSaveResult>> Create([FromBody] GastoCreateRequest request, CancellationToken ct)
+    public async Task<ActionResult<ApiResponse<GastoSaveResult>>> Create(
+        [FromBody] GastoCreateRequest gastoRequest,
+        CancellationToken cancellationToken)
     {
-        var result = await _service.CreateAsync(request, ct);
+        var saveResult = await _gastoService.CreateAsync(gastoRequest, cancellationToken);
 
-        // Devuelve 201 con el Id del encabezado y lista de sobregiros (si hubiera)
+        var response = new ApiResponse<GastoSaveResult>(201, "Created", saveResult);
+
+        // 👉 Usa la acción real: nameof(GetById)
         return CreatedAtAction(
-            actionName: nameof(GetByIdPlaceholder),
-            routeValues: new { id = result.GastoEncabezadoId },
-            value: result
+            actionName: nameof(GetById),
+            routeValues: new { id = saveResult.GastoEncabezadoId },
+            value: response
         );
     }
 
     [HttpGet("{id:int}")]
-public async Task<ActionResult<ApiResponse<GastoReadDto>>> GetById(int id, CancellationToken ct)
-{
-    var gasto = await _service.GetByIdAsync(id, ct);
-    if (gasto is null)
-        return NotFound(new ApiResponse<string>(404, "Not Found", $"Gasto {id} no existe"));
+    public async Task<ActionResult<ApiResponse<GastoReadDto>>> GetById(
+        int id,
+        CancellationToken cancellationToken)
+    {
+        var gasto = await _gastoService.GetByIdAsync(id, cancellationToken);
+        if (gasto is null)
+        {
+            return NotFound(new ApiResponse<string>(404, "Not Found", $"Gasto {id} no existe"));
+        }
 
-    return Ok(new ApiResponse<GastoReadDto>(200, "OK", gasto));
+        var response = new ApiResponse<GastoReadDto>(200, "OK", gasto);
+        return Ok(response);
+    }
 }
-
-}
-
-

@@ -10,25 +10,30 @@ namespace WebApplication.Controllers;
 [Route("api/[controller]")]
 public class PresupuestoController : ControllerBase
 {
-    private readonly IPresupuestoService _service;
-    private readonly ApplicationDbContext _db;
+    private readonly IPresupuestoService _presupuestoService;
+    private readonly ApplicationDbContext _dbContext;
 
-    public PresupuestoController(IPresupuestoService service, ApplicationDbContext db)
+    public PresupuestoController(IPresupuestoService presupuestoService, ApplicationDbContext dbContext)
     {
-        _service = service;
-        _db = db;
+        _presupuestoService = presupuestoService;
+        _dbContext = dbContext;
     }
 
     [HttpPost("upsert")]
-    public async Task<ActionResult<ApiResponse<PresupuestoDto>>> Upsert([FromBody] PresupuestoUpsertDto dto, CancellationToken ct)
+    public async Task<ActionResult<ApiResponse<PresupuestoDto>>> Upsert(
+        [FromBody] PresupuestoUpsertDto upsertDto,
+        CancellationToken cancellationToken)
     {
-        var id = await _service.UpsertAsync(dto, ct);
+        var presupuestoId = await _presupuestoService.UpsertAsync(upsertDto, cancellationToken);
 
-        var entity = await _db.Presupuestos.AsNoTracking()
-            .Where(p => p.Id == id)
-            .Select(p => new PresupuestoDto(p.Id, p.Anio, p.Mes, p.TipoGastoId, p.MontoPresupuestado, p.UsuarioId))
-            .FirstAsync(ct);
+        var presupuestoDto = await _dbContext.Presupuestos
+            .AsNoTracking()
+            .Where(p => p.Id == presupuestoId)
+            .Select(p => new PresupuestoDto(
+                p.Id, p.Anio, p.Mes, p.TipoGastoId, p.MontoPresupuestado, p.UsuarioId))
+            .FirstAsync(cancellationToken);
 
-        return Ok(new ApiResponse<PresupuestoDto>(200, "OK", entity));
+        var response = new ApiResponse<PresupuestoDto>(200, "OK", presupuestoDto);
+        return Ok(response);
     }
 }

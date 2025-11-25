@@ -1,31 +1,37 @@
-
+using Microsoft.EntityFrameworkCore;
+using WebApplication.Data;
 using WebApplication.Models;
 using WebApplication.Services.Interfaces;
-using WebApplication.Data;  
+
 namespace WebApplication.Services;
 
 public class DepositoService : IDepositoService
 {
-    private readonly ApplicationDbContext _db;
+    private readonly ApplicationDbContext _dbContext;
 
-    public DepositoService(ApplicationDbContext db)
+    public DepositoService(ApplicationDbContext dbContext)
     {
-        _db = db;
+        _dbContext = dbContext;
     }
 
-    public async Task<int> CreateAsync(DateTime fecha, int fondoMonetarioId, decimal monto, CancellationToken ct = default)
+    public async Task<int> CreateAsync(DateTime transactionDate, int monetaryFundId, decimal amount, CancellationToken ct = default)
     {
-        if (monto <= 0) throw new ArgumentOutOfRangeException(nameof(monto), "El monto debe ser > 0.");
+        if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), "El monto debe ser > 0.");
 
-        var dep = new Deposito
+        var depositEntity = new Deposito
         {
-            Fecha = fecha,
-            FondoMonetarioId = fondoMonetarioId,
-            Monto = monto
+            Fecha = transactionDate,
+            FondoMonetarioId = monetaryFundId,
+            Monto = amount
         };
 
-        _db.Depositos.Add(dep);
-        await _db.SaveChangesAsync(ct);
-        return dep.Id;
+        _dbContext.Depositos.Add(depositEntity);
+        await _dbContext.SaveChangesAsync(ct);
+        return depositEntity.Id;
     }
+
+    public Task<Deposito?> GetByIdAsync(int depositId, CancellationToken ct = default) =>
+        _dbContext.Depositos
+                  .AsNoTracking()
+                  .FirstOrDefaultAsync(d => d.Id == depositId, ct);
 }

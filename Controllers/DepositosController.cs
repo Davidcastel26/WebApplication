@@ -8,32 +8,49 @@ namespace WebApplication.Controllers;
 [Route("api/[controller]")]
 public class DepositosController : ControllerBase
 {
-    private readonly IDepositoService _service;
+    private readonly IDepositoService _depositService;
 
-    public DepositosController(IDepositoService service) => _service = service;
+    public DepositosController(IDepositoService depositService)
+    {
+        _depositService = depositService;
+    }
 
     public record DepositoCreateDto(DateTime Fecha, int FondoMonetarioId, decimal Monto);
 
     [HttpPost]
-    public async Task<ActionResult<ApiResponse<DepositoDto>>> Create([FromBody] DepositoCreateDto dto, CancellationToken ct)
+    public async Task<ActionResult<ApiResponse<DepositoDto>>> Create(
+        [FromBody] DepositoCreateDto createRequest,
+        CancellationToken cancellationToken)
     {
-        var id = await _service.CreateAsync(dto.Fecha, dto.FondoMonetarioId, dto.Monto, ct);
-        var dep = await _service.GetByIdAsync(id, ct);
-        if (dep is null)
-            return Problem("Creado pero no se pudo leer el depósito.");
+        var createdDepositId = await _depositService.CreateAsync(
+            transactionDate: createRequest.Fecha,
+            monetaryFundId: createRequest.FondoMonetarioId,
+            amount: createRequest.Monto,
+            ct: cancellationToken);
 
-        var body = new DepositoDto(dep.Id, dep.Fecha, dep.FondoMonetarioId, dep.Monto);
-        return Ok(new ApiResponse<DepositoDto>(200, "OK", body));
+        var createdDeposit = await _depositService.GetByIdAsync(createdDepositId, cancellationToken);
+        if (createdDeposit is null)
+            return Problem("El depósito fue creado pero no se pudo recuperar.");
+
+        var responseBody = new DepositoDto(
+            createdDeposit.Id,
+            createdDeposit.Fecha,
+            createdDeposit.FondoMonetarioId,
+            createdDeposit.Monto);
+
+        return Ok(new ApiResponse<DepositoDto>(200, "OK", responseBody));
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<ApiResponse<DepositoDto>>> GetById(int id, CancellationToken ct)
+    public async Task<ActionResult<ApiResponse<DepositoDto>>> GetById(
+        int id,
+        CancellationToken cancellationToken)
     {
-        var dep = await _service.GetByIdAsync(id, ct);
-        if (dep is null)
+        var deposit = await _depositService.GetByIdAsync(id, cancellationToken);
+        if (deposit is null)
             return NotFound(new ApiResponse<string>(404, "Not Found", $"Depósito {id} no existe"));
 
-        var body = new DepositoDto(dep.Id, dep.Fecha, dep.FondoMonetarioId, dep.Monto);
-        return Ok(new ApiResponse<DepositoDto>(200, "OK", body));
+        var responseBody = new DepositoDto(deposit.Id, deposit.Fecha, deposit.FondoMonetarioId, deposit.Monto);
+        return Ok(new ApiResponse<DepositoDto>(200, "OK", responseBody));
     }
 }
