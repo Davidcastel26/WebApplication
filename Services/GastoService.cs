@@ -125,4 +125,23 @@ public class GastoService : IGastoService
             throw;
         }
     }
+
+    public async Task<GastoReadDto?> GetByIdAsync(int id, CancellationToken ct = default)
+{
+    var e = await _db.GastoEncabezados
+        .Include(x => x.Detalles).ThenInclude(d => d.TipoGasto)
+        .AsNoTracking()
+        .FirstOrDefaultAsync(x => x.Id == id, ct);
+
+    if (e is null) return null;
+
+    var detalles = e.Detalles
+        .Select(d => new GastoDetalleReadDto(d.Id, d.TipoGastoId, d.TipoGasto?.Nombre ?? $"TipoGasto {d.TipoGastoId}", d.Monto))
+        .ToList();
+
+    var total = detalles.Sum(x => x.Monto);
+
+    return new GastoReadDto(e.Id, e.Fecha, e.FondoMonetarioId, e.Observaciones, e.NombreComercio, e.TipoDocumento.ToString(), total, detalles);
+}
+
 }

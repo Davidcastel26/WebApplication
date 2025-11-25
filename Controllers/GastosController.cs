@@ -25,7 +25,16 @@ public class GastosController : ControllerBase
         );
     }
 
-    // Placeholder (si luego implementas GET por id)
     [HttpGet("{id:int}")]
-    public IActionResult GetByIdPlaceholder(int id) => NoContent();
+public async Task<ActionResult<ApiResponse<GastoReadDto>>> GetById(int id, CancellationToken ct)
+{
+    var gasto = await _service.GetByIdAsync(id, ct);
+    if (gasto is null)
+        return NotFound(new ApiResponse<string>(404, "Not Found", $"Gasto {id} no existe"));
+
+    return Ok(new ApiResponse<GastoReadDto>(200, "OK", gasto));
 }
+
+}
+
+
