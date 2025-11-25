@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
-
+using WebApplication.Data;
+using WebApplication.Models;
 using WebApplication.Repository.IRepository;
 
 namespace WebApplication.Repository;
@@ -11,6 +12,7 @@ public class TipoGastoRepository : Repository<TipoGasto>, ITipoGastoRepository
     private const int PadLength = 4; // TG-0001
 
     public TipoGastoRepository(ApplicationDbContext db) : base(db) { }
+
 
     public async Task<bool> CodigoExistsAsync(string codigo, CancellationToken ct = default) =>
         await _set.AnyAsync(t => t.Codigo == codigo, ct);

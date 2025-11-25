@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using WebApplication.Repository.IRepository;
-
+using WebApplication.Data;  
 namespace WebApplication.Repository;
 
 public class UnitOfWork : IUnitOfWork

@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication.Models.Dtos;
 using WebApplication.Services.Interfaces;
-
+using WebApplication.Models;
 namespace WebApplication.Services;
+using WebApplication.Data;  
 
 public class ReportService : IReportService
 {
@@ -44,7 +45,7 @@ public class ReportService : IReportService
     }
 
     public async Task<IReadOnlyList<ComparativoItemDto>> GetComparativoAsync(
-    DateTime desde, DateTime hasta, string? usuarioId, CancellationToken ct = default)
+    DateTime desde, DateTime hasta, int? usuarioId, CancellationToken ct = default)
 {
     if (desde == default || hasta == default)
         throw new ArgumentException("Los parámetros 'desde' y 'hasta' son obligatorios.");

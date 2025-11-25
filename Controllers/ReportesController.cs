@@ -26,7 +26,7 @@ public class ReportesController : ControllerBase
     public async Task<ActionResult<IReadOnlyList<ComparativoItemDto>>> Comparativo(
         [FromQuery] DateTime desde,
         [FromQuery] DateTime hasta,
-        [FromQuery] string? usuarioId,
+        [FromQuery] int? usuarioId,
         CancellationToken ct)
     {
         var data = await _service.GetComparativoAsync(desde, hasta, usuarioId, ct);

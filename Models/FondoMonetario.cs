@@ -1,3 +1,4 @@
+namespace WebApplication.Models;
 public enum TipoFondo
 {
     CajaMenuda,

@@ -16,7 +16,7 @@ public record GastoCreateRequest(
     string NombreComercio,
     TipoDocumentoDto TipoDocumento,
     List<GastoDetalleCreateDto> Detalles,
-    string? UsuarioId // opcional para asociar contra Presupuesto
+    int? UsuarioId // opcional para asociar contra Presupuesto
 );
 
 public record GastoOverdraftInfo(

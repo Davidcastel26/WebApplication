@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication.Models;
 using WebApplication.Models.Dtos;
 using WebApplication.Services.Interfaces;
+using WebApplication.Data;  
 
 namespace WebApplication.Services;
 

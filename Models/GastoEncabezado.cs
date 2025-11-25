@@ -1,3 +1,5 @@
+namespace WebApplication.Models;
+
 public enum TipoDocumento
 {
     Comprobante,

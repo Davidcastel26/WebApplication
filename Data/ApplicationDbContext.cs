@@ -1,9 +1,13 @@
 using Microsoft.EntityFrameworkCore;
+using WebApplication.Models;
+
+namespace WebApplication.Data;
 
 public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) {}
 
+    public DbSet<Usuario> Usuarios { get; set; } = null!;
     public DbSet<TipoGasto> TipoGastos { get; set; } = null!;
     public DbSet<FondoMonetario> FondoMonetarios { get; set; } = null!;
     public DbSet<Presupuesto> Presupuestos { get; set; } = null!;
@@ -14,6 +18,24 @@ public class ApplicationDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        // ---------- USUARIO ----------
+        modelBuilder.Entity<Usuario>(e =>
+        {
+            e.ToTable("Usuario");
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.CreatedDate)
+                .HasColumnType("date")   // guarda sólo fecha (si prefieres datetime, quita esto)
+                .IsRequired();
+
+            e.Property(x => x.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            e.Property(x => x.Desc)
+                .HasMaxLength(300);
+        });
 
         // TIPO GASTO
         modelBuilder.Entity<TipoGasto>(e =>
@@ -71,10 +93,6 @@ public class ApplicationDbContext : DbContext
 
             e.HasKey(x => x.Id);
 
-            e.Property(x => x.Mes).IsRequired();
-
-            e.Property(x => x.Anio).IsRequired();
-
             e.Property(x => x.MontoPresupuestado)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
@@ -87,6 +105,12 @@ public class ApplicationDbContext : DbContext
                 .WithMany(t => t.Presupuestos)
                 .HasForeignKey(x => x.TipoGastoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // 👇 relación con Usuario (FK al Id)
+            e.HasOne(x => x.Usuario)
+                .WithMany(u => u.Presupuestos)
+                .HasForeignKey(x => x.UsuarioId)
+                .OnDelete(DeleteBehavior.Restrict); // o SetNull si prefieres
         });
 
         // GASTO ENCABEZADO

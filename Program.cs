@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
-
+using WebApplication.Data;
 using WebApplication.Repository;
 using WebApplication.Repository.IRepository;
 using WebApplication.Services;
 using WebApplication.Services.Interfaces;
-
+// Alias por conflicto con tu namespace raíz "WebApplication"
 using AspNetWebApp = Microsoft.AspNetCore.Builder.WebApplication;
 
 var builder = AspNetWebApp.CreateBuilder(args);
@@ -15,7 +15,7 @@ var dbConectionString = builder.Configuration.GetConnectionString("ConexionSql")
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(dbConectionString));
 
-// Repositorios
+// Repos
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Servicios

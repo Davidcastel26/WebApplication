@@ -1,3 +1,5 @@
+namespace WebApplication.Models;
+
 public class Presupuesto
 {
     public int Id { get; set; }
@@ -8,5 +10,6 @@ public class Presupuesto
     public decimal MontoPresupuestado { get; set; }
 
     // Opción para multiusuario
-    public string? UsuarioId { get; set; }
+    public int? UsuarioId { get; set; }
+    public Usuario? Usuario { get; set; }
 }

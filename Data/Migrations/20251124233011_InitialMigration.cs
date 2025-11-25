@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace WebApplication.Migrations
+namespace WebApplication.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialMigration : Migration
@@ -40,6 +40,21 @@ namespace WebApplication.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TipoGasto", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Usuario",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedDate = table.Column<DateTime>(type: "date", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Desc = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Usuario", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,7 +112,7 @@ namespace WebApplication.Migrations
                     Anio = table.Column<int>(type: "int", nullable: false),
                     TipoGastoId = table.Column<int>(type: "int", nullable: false),
                     MontoPresupuestado = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    UsuarioId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UsuarioId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -108,6 +123,12 @@ namespace WebApplication.Migrations
                         name: "FK_Presupuesto_TipoGasto_TipoGastoId",
                         column: x => x.TipoGastoId,
                         principalTable: "TipoGasto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Presupuesto_Usuario_UsuarioId",
+                        column: x => x.UsuarioId,
+                        principalTable: "Usuario",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -178,6 +199,11 @@ namespace WebApplication.Migrations
                 column: "TipoGastoId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Presupuesto_UsuarioId",
+                table: "Presupuesto",
+                column: "UsuarioId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TipoGasto_Codigo",
                 table: "TipoGasto",
                 column: "Codigo",
@@ -201,6 +227,9 @@ namespace WebApplication.Migrations
 
             migrationBuilder.DropTable(
                 name: "TipoGasto");
+
+            migrationBuilder.DropTable(
+                name: "Usuario");
 
             migrationBuilder.DropTable(
                 name: "FondoMonetario");

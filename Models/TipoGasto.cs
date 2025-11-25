@@ -1,3 +1,4 @@
+namespace WebApplication.Models;
 
 public class TipoGasto
 {

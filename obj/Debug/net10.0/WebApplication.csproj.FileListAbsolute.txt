@@ -88,6 +88,9 @@
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Microsoft.SqlServer.Server.dll
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Mono.TextTemplating.dll
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Newtonsoft.Json.dll
+/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
+/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
+/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/System.ClientModel.dll
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/System.CodeDom.dll
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/System.Composition.AttributedModel.dll
@@ -196,6 +199,7 @@
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.csproj.CoreCompileInputs.cache
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.MvcApplicationPartsAssemblyInfo.cs
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.MvcApplicationPartsAssemblyInfo.cache
+/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.sourcelink.json
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/rjimswa.dswa.cache.json
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json
@@ -211,6 +215,3 @@
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.pdb
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/WebApplication.genruntimeconfig.cache
 /Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/obj/Debug/net10.0/ref/WebApplication.dll
-/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.Swagger.dll
-/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerGen.dll
-/Users/davidcastellanos/Documents/Dev/Backend/DotNet/WebApplication/bin/Debug/net10.0/Swashbuckle.AspNetCore.SwaggerUI.dll

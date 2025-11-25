@@ -1,3 +1,4 @@
+namespace WebApplication.Models;
 public class Deposito
 {
     public int Id { get; set; }

@@ -3,19 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using WebApplication.Data;
 
 #nullable disable
 
-namespace WebApplication.Migrations
+namespace WebApplication.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251122232507_InitialMigration")]
-    partial class InitialMigration
+    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,7 +22,7 @@ namespace WebApplication.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Deposito", b =>
+            modelBuilder.Entity("WebApplication.Models.Deposito", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +49,7 @@ namespace WebApplication.Migrations
                         });
                 });
 
-            modelBuilder.Entity("FondoMonetario", b =>
+            modelBuilder.Entity("WebApplication.Models.FondoMonetario", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -83,7 +81,7 @@ namespace WebApplication.Migrations
                     b.ToTable("FondoMonetario", (string)null);
                 });
 
-            modelBuilder.Entity("GastoDetalle", b =>
+            modelBuilder.Entity("WebApplication.Models.GastoDetalle", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,7 +110,7 @@ namespace WebApplication.Migrations
                         });
                 });
 
-            modelBuilder.Entity("GastoEncabezado", b =>
+            modelBuilder.Entity("WebApplication.Models.GastoEncabezado", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -147,7 +145,7 @@ namespace WebApplication.Migrations
                     b.ToTable("GastoEncabezado", (string)null);
                 });
 
-            modelBuilder.Entity("Presupuesto", b =>
+            modelBuilder.Entity("WebApplication.Models.Presupuesto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -167,12 +165,14 @@ namespace WebApplication.Migrations
                     b.Property<int>("TipoGastoId")
                         .HasColumnType("int");
 
-                    b.Property<string>("UsuarioId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("UsuarioId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("TipoGastoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.HasIndex("Anio", "Mes", "TipoGastoId", "UsuarioId")
                         .IsUnique()
@@ -186,7 +186,7 @@ namespace WebApplication.Migrations
                         });
                 });
 
-            modelBuilder.Entity("TipoGasto", b =>
+            modelBuilder.Entity("WebApplication.Models.TipoGasto", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -216,9 +216,34 @@ namespace WebApplication.Migrations
                     b.ToTable("TipoGasto", (string)null);
                 });
 
-            modelBuilder.Entity("Deposito", b =>
+            modelBuilder.Entity("WebApplication.Models.Usuario", b =>
                 {
-                    b.HasOne("FondoMonetario", "FondoMonetario")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Desc")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Usuario", (string)null);
+                });
+
+            modelBuilder.Entity("WebApplication.Models.Deposito", b =>
+                {
+                    b.HasOne("WebApplication.Models.FondoMonetario", "FondoMonetario")
                         .WithMany("Depositos")
                         .HasForeignKey("FondoMonetarioId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -227,15 +252,15 @@ namespace WebApplication.Migrations
                     b.Navigation("FondoMonetario");
                 });
 
-            modelBuilder.Entity("GastoDetalle", b =>
+            modelBuilder.Entity("WebApplication.Models.GastoDetalle", b =>
                 {
-                    b.HasOne("GastoEncabezado", "GastoEncabezado")
+                    b.HasOne("WebApplication.Models.GastoEncabezado", "GastoEncabezado")
                         .WithMany("Detalles")
                         .HasForeignKey("GastoEncabezadoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("TipoGasto", "TipoGasto")
+                    b.HasOne("WebApplication.Models.TipoGasto", "TipoGasto")
                         .WithMany("GastoDetalles")
                         .HasForeignKey("TipoGastoId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -246,9 +271,9 @@ namespace WebApplication.Migrations
                     b.Navigation("TipoGasto");
                 });
 
-            modelBuilder.Entity("GastoEncabezado", b =>
+            modelBuilder.Entity("WebApplication.Models.GastoEncabezado", b =>
                 {
-                    b.HasOne("FondoMonetario", "FondoMonetario")
+                    b.HasOne("WebApplication.Models.FondoMonetario", "FondoMonetario")
                         .WithMany("Gastos")
                         .HasForeignKey("FondoMonetarioId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -257,33 +282,45 @@ namespace WebApplication.Migrations
                     b.Navigation("FondoMonetario");
                 });
 
-            modelBuilder.Entity("Presupuesto", b =>
+            modelBuilder.Entity("WebApplication.Models.Presupuesto", b =>
                 {
-                    b.HasOne("TipoGasto", "TipoGasto")
+                    b.HasOne("WebApplication.Models.TipoGasto", "TipoGasto")
                         .WithMany("Presupuestos")
                         .HasForeignKey("TipoGastoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("WebApplication.Models.Usuario", "Usuario")
+                        .WithMany("Presupuestos")
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("TipoGasto");
+
+                    b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("FondoMonetario", b =>
+            modelBuilder.Entity("WebApplication.Models.FondoMonetario", b =>
                 {
                     b.Navigation("Depositos");
 
                     b.Navigation("Gastos");
                 });
 
-            modelBuilder.Entity("GastoEncabezado", b =>
+            modelBuilder.Entity("WebApplication.Models.GastoEncabezado", b =>
                 {
                     b.Navigation("Detalles");
                 });
 
-            modelBuilder.Entity("TipoGasto", b =>
+            modelBuilder.Entity("WebApplication.Models.TipoGasto", b =>
                 {
                     b.Navigation("GastoDetalles");
 
+                    b.Navigation("Presupuestos");
+                });
+
+            modelBuilder.Entity("WebApplication.Models.Usuario", b =>
+                {
                     b.Navigation("Presupuestos");
                 });
 #pragma warning restore 612, 618
