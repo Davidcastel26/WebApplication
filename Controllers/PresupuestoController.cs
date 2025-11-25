@@ -18,7 +18,7 @@ public class PresupuestoController : ControllerBase
         _presupuestoService = presupuestoService;
         _dbContext = dbContext;
     }
-
+    
     [HttpPost("upsert")]
     public async Task<ActionResult<ApiResponse<PresupuestoDto>>> Upsert(
         [FromBody] PresupuestoUpsertDto upsertDto,
@@ -33,7 +33,56 @@ public class PresupuestoController : ControllerBase
                 p.Id, p.Anio, p.Mes, p.TipoGastoId, p.MontoPresupuestado, p.UsuarioId))
             .FirstAsync(cancellationToken);
 
-        var response = new ApiResponse<PresupuestoDto>(200, "OK", presupuestoDto);
-        return Ok(response);
+        return Ok(new ApiResponse<PresupuestoDto>(200, "OK", presupuestoDto));
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<ApiResponse<IEnumerable<PresupuestoDto>>>> GetAll(
+        [FromQuery] int? anio,
+        [FromQuery] int? mes,
+        [FromQuery] int? usuarioId,
+        CancellationToken cancellationToken)
+    {
+        var query = _dbContext.Presupuestos
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (anio.HasValue)
+            query = query.Where(p => p.Anio == anio.Value);
+
+        if (mes.HasValue)
+            query = query.Where(p => p.Mes == mes.Value);
+
+        if (usuarioId.HasValue)
+        query = query.Where(p => p.UsuarioId == usuarioId.Value);
+
+        var items = await query
+        .OrderBy(p => p.Anio).ThenBy(p => p.Mes).ThenBy(p => p.TipoGastoId)
+        .Select(p => new PresupuestoDto(
+            p.Id, p.Anio, p.Mes, p.TipoGastoId, p.MontoPresupuestado, p.UsuarioId))
+        .ToListAsync(cancellationToken);
+
+        return Ok(new ApiResponse<IEnumerable<PresupuestoDto>>(200, "OK", items));
+    }
+
+    [HttpGet("single")]
+    public async Task<ActionResult<ApiResponse<PresupuestoDto?>>> GetSingle(
+        [FromQuery] int anio,
+        [FromQuery] int mes,
+        [FromQuery] int tipoGastoId,
+        [FromQuery] int? usuarioId,
+        CancellationToken cancellationToken)
+    {
+        var item = await _dbContext.Presupuestos
+            .AsNoTracking()
+            .Where(p => p.Anio == anio
+                        && p.Mes == mes
+                        && p.TipoGastoId == tipoGastoId
+                        && p.UsuarioId == usuarioId)
+            .Select(p => new PresupuestoDto(
+                p.Id, p.Anio, p.Mes, p.TipoGastoId, p.MontoPresupuestado, p.UsuarioId))
+            .FirstOrDefaultAsync(cancellationToken);
+
+        return Ok(new ApiResponse<PresupuestoDto?>(200, "OK", item));
     }
 }
