@@ -5,7 +5,7 @@ using WebApplication.Repository;
 using WebApplication.Repository.IRepository;
 using WebApplication.Services;
 using WebApplication.Services.Interfaces;
-// Alias por conflicto con tu namespace raíz "WebApplication"
+
 using AspNetWebApp = Microsoft.AspNetCore.Builder.WebApplication;
 
 var builder = AspNetWebApp.CreateBuilder(args);
@@ -34,7 +34,7 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
     opt.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// CORS (registro de la política)
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(CorsPolicyName, policy =>
@@ -47,22 +47,32 @@ builder.Services.AddCors(options =>
 
 // Swagger (Swashbuckle: JSON + UI)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new() { Title = "BudgetApi", Version = "v1" });
+});
 
 // ================== BUILD ==================
 var app = builder.Build();
 
-// ================== MIDDLEWARE ==================
+
 if (app.Environment.IsDevelopment())
 {
-    // Sirve /swagger/v1/swagger.json y la UI en /swagger
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwagger(c =>
+    {
+        c.RouteTemplate = "openapi/{documentName}.json";
+    });
+
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/openapi/v1.json", "BudgetApi v1");
+        c.RoutePrefix = "swagger";
+    });
 }
+
 
 app.UseHttpsRedirection();
 
-// Usa la política CORS (después de Build, antes de MapControllers)
 app.UseCors(CorsPolicyName);
 
 app.UseAuthorization();

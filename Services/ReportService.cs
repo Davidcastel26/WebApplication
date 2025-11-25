@@ -9,16 +9,23 @@ public class ReportService : IReportService
 {
     private readonly ApplicationDbContext _db;
 
-    public ReportService(ApplicationDbContext db)
-    {
-        _db = db;
-    }
+    public ReportService(ApplicationDbContext db) { _db = db; }
 
-    public async Task<IReadOnlyList<MovimientoItemDto>> GetMovimientosAsync(DateTime desde, DateTime hasta, CancellationToken ct = default)
+    public async Task<IReadOnlyList<MovimientoItemDto>> GetMovimientosAsync(
+        DateTime desde,
+        DateTime hasta,
+        CancellationToken ct = default)
     {
-        // Gastos: total por encabezado = suma de detalles
+        if (desde == default || hasta == default)
+            throw new ArgumentException("Los parámetros 'desde' y 'hasta' son obligatorios.");
+        if (desde > hasta)
+            throw new ArgumentException("'desde' no puede ser mayor que 'hasta'.");
+
+        var startDate = desde.Date;                 // 00:00:00 del día inicial
+        var endDateExclusive = hasta.Date.AddDays(1); // 00:00:00 del día siguiente
+
         var gastos = await _db.GastoEncabezados
-            .Where(e => e.Fecha >= desde && e.Fecha <= hasta)
+            .Where(e => e.Fecha >= startDate && e.Fecha < endDateExclusive)
             .Select(e => new MovimientoItemDto(
                 MovimientoTipo.Gasto,
                 e.Fecha,
@@ -29,7 +36,7 @@ public class ReportService : IReportService
             .ToListAsync(ct);
 
         var depositos = await _db.Depositos
-            .Where(d => d.Fecha >= desde && d.Fecha <= hasta)
+            .Where(d => d.Fecha >= startDate && d.Fecha < endDateExclusive)
             .Select(d => new MovimientoItemDto(
                 MovimientoTipo.Deposito,
                 d.Fecha,
@@ -39,9 +46,7 @@ public class ReportService : IReportService
             ))
             .ToListAsync(ct);
 
-        return gastos.Concat(depositos)
-                     .OrderBy(m => m.Fecha)
-                     .ToList();
+        return gastos.Concat(depositos).OrderBy(m => m.Fecha).ToList();
     }
 
     public async Task<IReadOnlyList<ComparativoItemDto>> GetComparativoAsync(

@@ -14,11 +14,14 @@ public class ReportesController : ControllerBase
 
     [HttpGet("movimientos")]
     public async Task<ActionResult<IReadOnlyList<MovimientoItemDto>>> Movimientos(
-        [FromQuery] DateTime desde,
-        [FromQuery] DateTime hasta,
+        [FromQuery] DateTime? desde,
+        [FromQuery] DateTime? hasta,
         CancellationToken ct)
     {
-        var data = await _service.GetMovimientosAsync(desde, hasta, ct);
+        if (desde is null || hasta is null)
+            return BadRequest("Debe enviar 'desde' y 'hasta' (ej: 2025-11-01).");
+
+        var data = await _service.GetMovimientosAsync(desde.Value, hasta.Value, ct);
         return Ok(data);
     }
 
